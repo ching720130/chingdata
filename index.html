@@ -1,310 +1,348 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Filter, Clock, Play, BookOpen, Activity, Heart, Brain, ChevronRight, X } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>銀髮族預防失能教案資料庫</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+      
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .modal-active {
+            overflow: hidden;
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
 
-const LESSONS = [
-  {
-    id: 1,
-    title: '預防及延緩失能：撲克王記憶挑戰',
-    category: '認知訓練 / 身體協調',
-    type: 'cognitive',
-    duration: '13:00',
-    url: 'https://www.youtube.com/watch?v=kB0akZ1REKg',
-    video_id: 'kB0akZ1REKg',
-    description: '結合認知記憶與身體大肌肉活動，利用撲克牌遊戲激發長者大腦運作，同時強化肢體反應與專注力。',
-    keyPoints: [
-      '撲克牌顏色與動作連結',
-      '反應力訓練',
-      '短期記憶挑戰',
-      '全身協調運動'
-    ],
-    difficulty: '中等'
-  },
-  {
-    id: 2,
-    title: '益口銅身操',
-    category: '口腔運動 / 全身舒展',
-    type: 'oral',
-    duration: '06:24',
-    url: 'https://www.youtube.com/watch?v=qZ87nEuBR4E',
-    video_id: 'qZ87nEuBR4E',
-    description: '針對咀嚼與吞嚥能力設計，配合簡單的肢體動作，有效預防吸入性肺炎並提升進食安全。',
-    keyPoints: [
-      '咀嚼肌群運動',
-      '頸部肌肉伸展',
-      '吞嚥力強化',
-      '手腳輕量活動'
-    ],
-    difficulty: '簡易'
-  },
-  {
-    id: 3,
-    title: '口腔運動操：吞嚥障礙預防',
-    category: '口腔運動',
-    type: 'oral',
-    duration: '04:25',
-    url: 'https://www.youtube.com/watch?v=_ggkL88fbJI',
-    video_id: '_ggkL88fbJI',
-    description: '由專業語言治療師示範，專注於嘴唇、下巴與舌頭的細節運動，適合有吞嚥困擾的長者。',
-    keyPoints: [
-      '嘴唇閉合與崛起運動',
-      '下巴抗阻練習',
-      '舌頭靈活度訓練 (前後左右)',
-      '口腔肌群按摩'
-    ],
-    difficulty: '簡易'
-  },
-  {
-    id: 4,
-    title: '七分鐘運動：基礎心肺有氧',
-    category: '體能鍛鍊',
-    type: 'aerobic',
-    duration: '08:20',
-    url: 'https://www.youtube.com/watch?v=LFZp7wC01Dg',
-    video_id: 'LFZp7wC01Dg',
-    description: '低衝擊、無跳躍設計，適合所有年齡層的基礎體力補給，強化核心與心肺耐力。',
-    keyPoints: [
-      '無跳躍低衝擊動作',
-      '全身主要肌群鍛鍊',
-      '站姿平衡與肌耐力',
-      '心肺功能循環提升'
-    ],
-    difficulty: '中等'
-  },
-  {
-    id: 5,
-    title: '高齡者有氧健康操',
-    category: '體能鍛鍊 / 全身有氧',
-    type: 'aerobic',
-    duration: '28:04',
-    url: 'https://www.youtube.com/watch?v=7pIeSsndwbA',
-    video_id: '7pIeSsndwbA',
-    description: '由衛生局推廣的長版健康操，節奏適中，包含暖身、主運動與緩和動作，是完整的團體運動教案。',
-    keyPoints: [
-      '漸進式暖身',
-      '多關節活動度訓練',
-      '中強度持續性有氧',
-      '放鬆與調整呼吸'
-    ],
-    difficulty: '進階'
-  }
-];
-
-export default function App() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [selectedLesson, setSelectedLesson] = useState(null);
-
-  const filteredLessons = useMemo(() => {
-    return LESSONS.filter(lesson => {
-      const matchesSearch = lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            lesson.category.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = filterType === 'all' || lesson.type === filterType;
-      return matchesSearch && matchesFilter;
-    });
-  }, [searchTerm, filterType]);
-
-  const getCategoryIcon = (type) => {
-    switch(type) {
-      case 'oral': return <Activity className="text-blue-500" />;
-      case 'aerobic': return <Heart className="text-red-500" />;
-      case 'cognitive': return <Brain className="text-purple-500" />;
-      default: return <BookOpen className="text-gray-500" />;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <BookOpen size={32} className="text-emerald-600" />
-            銀髮族預防失能教案資料庫
-          </h1>
-          <p className="mt-2 text-slate-600">快速檢索運動方案，提升長者生活品質</p>
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 flex items-center justify-center md:justify-start gap-3">
+                <i class="fas fa-book-medical text-emerald-600"></i>
+                銀髮族預防失能教案資料庫
+            </h1>
+            <p class="mt-3 text-slate-600">專業運動教案總覽，守護長者健康活力</p>
         </header>
 
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input 
-              type="text" 
-              placeholder="搜尋關鍵字或分類..." 
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-            {[
-              { id: 'all', label: '全部教案', icon: <Filter size={16}/> },
-              { id: 'oral', label: '口腔健康', icon: <Activity size={16}/> },
-              { id: 'aerobic', label: '體能鍛鍊', icon: <Heart size={16}/> },
-              { id: 'cognitive', label: '認知訓練', icon: <Brain size={16}/> }
-            ].map(f => (
-              <button
-                key={f.id}
-                onClick={() => setFilterType(f.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  filterType === f.id 
-                    ? 'bg-emerald-600 text-white shadow-md' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {f.icon}
-                {f.label}
-              </button>
-            ))}
-          </div>
+        <!-- Search and Filters -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="relative flex-grow">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="搜尋教案標題、關鍵字..." 
+                        class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
+                    >
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0" id="filterContainer">
+                    <button data-type="all" class="filter-btn active px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-emerald-600 text-white shadow-md transition-all">
+                        全部教案
+                    </button>
+                    <button data-type="oral" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                        口腔健康
+                    </button>
+                    <button data-type="aerobic" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                        體能鍛鍊
+                    </button>
+                    <button data-type="cognitive" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                        認知訓練
+                    </button>
+                </div>
+            </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredLessons.map(lesson => (
-            <div 
-              key={lesson.id} 
-              onClick={() => setSelectedLesson(lesson)}
-              className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer overflow-hidden"
-            >
-              <div className="aspect-video bg-slate-200 relative">
-                <img 
-                  src={`https://img.youtube.com/vi/${lesson.video_id}/mqdefault.jpg`} 
-                  alt={lesson.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
-                  <Play className="text-white fill-current" size={48} />
-                </div>
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {lesson.duration}
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  {getCategoryIcon(lesson.type)}
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{lesson.category}</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-800 leading-snug group-hover:text-emerald-600 transition-colors">
-                  {lesson.title}
-                </h3>
-                <p className="mt-2 text-slate-500 text-sm line-clamp-2">
-                  {lesson.description}
-                </p>
-                <div className="mt-4 flex items-center justify-between text-xs font-medium text-slate-400 border-t pt-4">
-                  <span className="flex items-center gap-1"><Clock size={14}/> {lesson.duration}</span>
-                  <span className="flex items-center gap-1">難易度: {lesson.difficulty}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+        <!-- Lessons Grid -->
+        <div id="lessonsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards will be injected here by JS -->
         </div>
 
-        {/* Empty State */}
-        {filteredLessons.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
-            <Search className="mx-auto text-slate-300 mb-4" size={48} />
-            <h3 className="text-xl font-medium text-slate-600">找不到符合的教案</h3>
-            <p className="text-slate-400 mt-2">請嘗試更換關鍵字或篩選條件</p>
-          </div>
-        )}
-
-        {/* Modal */}
-        {selectedLesson && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b">
-                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                  {getCategoryIcon(selectedLesson.type)}
-                  {selectedLesson.title}
-                </h2>
-                <button 
-                  onClick={() => setSelectedLesson(null)}
-                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              {/* Modal Content */}
-              <div className="overflow-y-auto flex-grow p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Left: Video & Meta */}
-                  <div>
-                    <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-lg">
-                      <iframe 
-                        width="100%" 
-                        height="100%" 
-                        src={`https://www.youtube.com/embed/${selectedLesson.video_id}?autoplay=1`} 
-                        title="YouTube video player" 
-                        frameBorder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <div className="mt-6 space-y-4 text-slate-600">
-                      <div className="flex gap-4">
-                        <div className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                          <span className="block text-[10px] text-slate-400 uppercase font-bold tracking-widest">課程時長</span>
-                          <span className="text-lg font-semibold">{selectedLesson.duration}</span>
-                        </div>
-                        <div className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                          <span className="block text-[10px] text-slate-400 uppercase font-bold tracking-widest">訓練強度</span>
-                          <span className="text-lg font-semibold">{selectedLesson.difficulty}</span>
-                        </div>
-                      </div>
-                      <a 
-                        href={selectedLesson.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
-                      >
-                        <Play size={18} /> 在 YouTube 上觀看
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Right: Details */}
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <ChevronRight size={16} className="text-emerald-500" /> 教案簡介
-                      </h4>
-                      <p className="text-slate-700 leading-relaxed bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
-                        {selectedLesson.description}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <ChevronRight size={16} className="text-emerald-500" /> 核心動作重點
-                      </h4>
-                      <ul className="grid grid-cols-1 gap-3">
-                        {selectedLesson.keyPoints.map((point, idx) => (
-                          <li key={idx} className="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span className="flex-shrink-0 w-6 h-6 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-xs font-bold">
-                              {idx + 1}
-                            </span>
-                            <span className="text-slate-700 font-medium">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                      <h5 className="text-amber-800 font-bold text-sm mb-1">💡 專業建議</h5>
-                      <p className="text-amber-700 text-xs leading-relaxed">
-                        帶領長者進行運動時，請注意周邊環境安全，隨時觀察長者是否有呼吸困難或不適現象，動作以「緩慢、精準」為原則。
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-24 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+            <i class="fas fa-search text-slate-200 text-6xl mb-4"></i>
+            <h3 class="text-xl font-bold text-slate-500">找不到相關教案</h3>
+            <p class="text-slate-400 mt-2">請嘗試變更搜尋文字或分類篩選</p>
+        </div>
     </div>
-  );
-}
+
+    <!-- Details Modal -->
+    <div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-5 border-b sticky top-0 bg-white z-10">
+                <h2 id="modalTitle" class="text-xl font-bold text-slate-800 truncate pr-4"></h2>
+                <button id="closeModal" class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="overflow-y-auto p-6 md:p-8">
+                <div class="flex flex-col lg:flex-row gap-10">
+                    <!-- Left: Video & Stats -->
+                    <div class="lg:w-3/5">
+                        <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-lg border border-slate-100">
+                            <div id="videoContainer" class="w-full h-full"></div>
+                        </div>
+                        <div class="mt-6 flex gap-4">
+                            <div class="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <span class="block text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">課程時間</span>
+                                <span id="modalDuration" class="text-xl font-bold text-slate-700"></span>
+                            </div>
+                            <div class="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <span class="block text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">訓練難度</span>
+                                <span id="modalDifficulty" class="text-xl font-bold text-slate-700"></span>
+                            </div>
+                        </div>
+                        <a id="youtubeBtn" href="#" target="_blank" class="mt-6 flex items-center justify-center gap-2 w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg shadow-red-600/20 transition-all">
+                            <i class="fab fa-youtube text-xl"></i> 前往 YouTube 觀看
+                        </a>
+                    </div>
+
+                    <!-- Right: Info -->
+                    <div class="lg:w-2/5 space-y-8">
+                        <div>
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 教案簡介
+                            </h4>
+                            <p id="modalDescription" class="text-slate-600 leading-relaxed bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100"></p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 核心動作重點
+                            </h4>
+                            <ul id="modalKeyPoints" class="space-y-3">
+                                <!-- Points injected here -->
+                            </ul>
+                        </div>
+
+                        <div class="p-5 bg-amber-50 rounded-2xl border border-amber-100">
+                            <h5 class="text-amber-800 font-bold text-sm mb-2 flex items-center gap-2">
+                                <i class="fas fa-lightbulb"></i> 專業指導建議
+                            </h5>
+                            <p class="text-amber-700 text-xs leading-relaxed">
+                                帶領運動前請確認場地平整且通風。動作應由慢至快，若長者出現呼吸急促或頭暈現象應立即停止。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LESSONS = [
+            {
+                id: 1,
+                title: '預防及延緩失能：撲克王記憶挑戰',
+                category: '認知訓練 / 身體協調',
+                type: 'cognitive',
+                duration: '13:00',
+                video_id: 'kB0akZ1REKg',
+                description: '結合認知記憶與身體大肌肉活動，利用撲克牌遊戲激發長者大腦運作，同時強化肢體反應與專注力。',
+                keyPoints: ['紅黑花色動作連結', '短期視覺記憶挑戰', '上肢與下肢交替運動', '手眼協調反應訓練'],
+                difficulty: '中等'
+            },
+            {
+                id: 2,
+                title: '益口銅身操',
+                category: '口腔運動 / 全身舒展',
+                type: 'oral',
+                duration: '06:24',
+                video_id: 'qZ87nEuBR4E',
+                description: '針對咀嚼與吞嚥能力設計，配合簡單的肢體動作，有效預防吸入性肺炎並提升進食安全。',
+                keyPoints: ['咀嚼肌群強化', '頸部與肩胛放鬆', '聲帶與吞嚥力練習', '坐姿全身協調'],
+                difficulty: '簡易'
+            },
+            {
+                id: 3,
+                title: '口腔運動操：吞嚥障礙預防',
+                category: '口腔運動',
+                type: 'oral',
+                duration: '04:25',
+                video_id: '_ggkL88fbJI',
+                description: '由專業語言治療師示範，專注於嘴唇、下巴與舌頭的細節運動，適合有吞嚥困擾或預防功能的長者。',
+                keyPoints: ['嘴唇閉合與力量訓練', '舌頭四向靈活度練習', '下巴抗阻耐力運動', '口腔周邊肌肉按摩'],
+                difficulty: '簡易'
+            },
+            {
+                id: 4,
+                title: '七分鐘運動：基礎心肺有氧',
+                category: '體能鍛鍊',
+                type: 'aerobic',
+                duration: '08:20',
+                video_id: 'LFZp7wC01Dg',
+                description: '低衝擊、無跳躍設計，專為高齡者或初學者設計的體力補給，強化核心與心肺耐力。',
+                keyPoints: ['低衝擊原地踏步', '大肌肉群循環訓練', '核心肌群穩定練習', '漸進式心肺負荷提升'],
+                difficulty: '中等'
+            },
+            {
+                id: 5,
+                title: '高齡者有氧健康操',
+                category: '體能鍛鍊 / 全身有氧',
+                type: 'aerobic',
+                duration: '28:04',
+                video_id: '7pIeSsndwbA',
+                description: '臺北市衛生局推廣長版教案，包含完整的暖身、主運動與緩和，是團體課程的最佳教材。',
+                keyPoints: ['全身性關節活動', '中強度有氧代謝', '平穩肢體伸展', '呼吸節奏控制訓練'],
+                difficulty: '進階'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        const grid = document.getElementById('lessonsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const emptyState = document.getElementById('emptyState');
+
+        // Modal Elements
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+        const closeModal = document.getElementById('closeModal');
+
+        function renderLessons() {
+            const filtered = LESSONS.filter(l => {
+                const matchesSearch = l.title.includes(currentSearch) || l.category.includes(currentSearch);
+                const matchesFilter = currentFilter === 'all' || l.type === currentFilter;
+                return matchesSearch && matchesFilter;
+            });
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                grid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                grid.innerHTML = filtered.map(lesson => `
+                    <div class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer overflow-hidden" onclick="openLesson(${lesson.id})">
+                        <div class="aspect-video bg-slate-200 relative">
+                            <img src="https://img.youtube.com/vi/${lesson.video_id}/mqdefault.jpg" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                                <div class="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-xl">
+                                    <i class="fas fa-play text-white ml-1"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-3 right-3 bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded">
+                                ${lesson.duration}
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2 h-2 rounded-full ${getCategoryColor(lesson.type)}"></span>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${lesson.category}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-emerald-600 transition-colors">
+                                ${lesson.title}
+                            </h3>
+                            <p class="mt-3 text-slate-500 text-sm line-clamp-2 leading-relaxed">
+                                ${lesson.description}
+                            </p>
+                            <div class="mt-5 flex items-center justify-between text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">
+                                <span><i class="far fa-clock mr-1"></i> ${lesson.duration}</span>
+                                <span class="bg-slate-50 px-2 py-1 rounded">${lesson.difficulty}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getCategoryColor(type) {
+            switch(type) {
+                case 'oral': return 'bg-blue-500';
+                case 'aerobic': return 'bg-red-500';
+                case 'cognitive': return 'bg-purple-500';
+                default: return 'bg-slate-500';
+            }
+        }
+
+        function openLesson(id) {
+            const lesson = LESSONS.find(l => l.id === id);
+            if (!lesson) return;
+
+            document.getElementById('modalTitle').innerText = lesson.title;
+            document.getElementById('modalDescription').innerText = lesson.description;
+            document.getElementById('modalDuration').innerText = lesson.duration;
+            document.getElementById('modalDifficulty').innerText = lesson.difficulty;
+            document.getElementById('youtubeBtn').href = `https://www.youtube.com/watch?v=${lesson.video_id}`;
+            
+            document.getElementById('videoContainer').innerHTML = `
+                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${lesson.video_id}?autoplay=1" 
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            `;
+
+            document.getElementById('modalKeyPoints').innerHTML = lesson.keyPoints.map((p, i) => `
+                <li class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <span class="flex-shrink-0 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] font-black">
+                        ${i + 1}
+                    </span>
+                    <span class="text-slate-700 font-medium text-sm">${p}</span>
+                </li>
+            `).join('');
+
+            modalOverlay.classList.remove('hidden');
+            document.body.classList.add('modal-active');
+            
+            // Animation trigger
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeDetails() {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                document.body.classList.remove('modal-active');
+                document.getElementById('videoContainer').innerHTML = ''; // Stop video
+            }, 300);
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderLessons();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+                    b.classList.add('bg-slate-100', 'text-slate-600');
+                });
+                btn.classList.add('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+                btn.classList.remove('bg-slate-100', 'text-slate-600');
+                currentFilter = btn.dataset.type;
+                renderLessons();
+            });
+        });
+
+        closeModal.addEventListener('click', closeDetails);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeDetails();
+        });
+
+        // Init
+        renderLessons();
+    </script>
+</body>
+</html>
