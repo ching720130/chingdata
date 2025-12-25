@@ -24,9 +24,27 @@
         .transition-all {
             transition: all 0.3s ease;
         }
+        /* 音樂旋轉動畫 */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .music-rotating {
+            animation: rotate 3s linear infinite;
+        }
     </style>
 </head>
 <body class="text-slate-900">
+
+    <!-- 背景音樂播放器 (隱藏) -->
+    <div id="bgMusicPlayerContainer" class="hidden">
+        <div id="bgMusicPlayer"></div>
+    </div>
+
+    <!-- 音樂控制懸浮按鈕 -->
+    <button id="musicToggle" class="fixed bottom-6 right-6 z-[60] w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center border border-slate-200 text-emerald-600 hover:scale-110 transition-all">
+        <i id="musicIcon" class="fas fa-music"></i>
+    </button>
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <!-- Header -->
@@ -146,7 +164,85 @@
         </div>
     </div>
 
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
+        // 背景音樂播放器邏輯
+        let bgPlayer;
+        let isMusicPlaying = false;
+
+        function onYouTubeIframeAPIReady() {
+            bgPlayer = new YT.Player('bgMusicPlayer', {
+                height: '0',
+                width: '0',
+                videoId: 'fpinVj7lDDs', // 鋼琴曲影片 ID
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'fpinVj7lDDs',
+                    'controls': 0,
+                    'showinfo': 0,
+                    'autohide': 1,
+                    'modestbranding': 1,
+                    'mute': 1 // 初始靜音以利自動播放
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // 嘗試播放
+            event.target.playVideo();
+            
+            // 監聽全局點擊來啟動聲音 (解決瀏覽器限制)
+            const enableAudio = () => {
+                bgPlayer.unMute();
+                bgPlayer.playVideo();
+                isMusicPlaying = true;
+                updateMusicUI();
+                document.removeEventListener('click', enableAudio);
+            };
+            document.addEventListener('click', enableAudio);
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isMusicPlaying = true;
+                updateMusicUI();
+            } else {
+                isMusicPlaying = false;
+                updateMusicUI();
+            }
+        }
+
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+
+        musicToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止觸發 document 的點擊事件
+            if (isMusicPlaying) {
+                bgPlayer.pauseVideo();
+            } else {
+                bgPlayer.unMute();
+                bgPlayer.playVideo();
+            }
+        });
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                musicIcon.className = "fas fa-compact-disc music-rotating";
+                musicToggle.classList.add('text-emerald-600');
+            } else {
+                musicIcon.className = "fas fa-music";
+                musicToggle.classList.remove('text-emerald-600');
+            }
+        }
+
+        // 原有資料庫邏輯
         const LESSONS = [
             {
                 id: 1,
@@ -213,7 +309,6 @@
         const filterBtns = document.querySelectorAll('.filter-btn');
         const emptyState = document.getElementById('emptyState');
 
-        // Modal Elements
         const modalOverlay = document.getElementById('modalOverlay');
         const modalContent = document.getElementById('modalContent');
         const closeModal = document.getElementById('closeModal');
@@ -278,6 +373,9 @@
             const lesson = LESSONS.find(l => l.id === id);
             if (!lesson) return;
 
+            // 打開彈窗時暫停背景音樂
+            if (isMusicPlaying) bgPlayer.pauseVideo();
+
             document.getElementById('modalTitle').innerText = lesson.title;
             document.getElementById('modalDescription').innerText = lesson.description;
             document.getElementById('modalDuration').innerText = lesson.duration;
@@ -301,7 +399,6 @@
             modalOverlay.classList.remove('hidden');
             document.body.classList.add('modal-active');
             
-            // Animation trigger
             setTimeout(() => {
                 modalContent.classList.remove('scale-95', 'opacity-0');
             }, 10);
@@ -312,11 +409,13 @@
             setTimeout(() => {
                 modalOverlay.classList.add('hidden');
                 document.body.classList.remove('modal-active');
-                document.getElementById('videoContainer').innerHTML = ''; // Stop video
+                document.getElementById('videoContainer').innerHTML = ''; 
+                
+                // 關閉詳情後，若原本有音樂則恢復背景音樂
+                if (!isMusicPlaying) bgPlayer.playVideo();
             }, 300);
         }
 
-        // Event Listeners
         searchInput.addEventListener('input', (e) => {
             currentSearch = e.target.value;
             renderLessons();
@@ -340,7 +439,6 @@
             if (e.target === modalOverlay) closeDetails();
         });
 
-        // Init
         renderLessons();
     </script>
 </body>
