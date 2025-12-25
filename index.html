@@ -36,49 +36,52 @@
 </head>
 <body class="text-slate-900">
 
-    <!-- 背景音樂播放器 (隱藏) -->
+    <!-- 背景音樂播放器 (隱藏式) -->
     <div id="bgMusicPlayerContainer" class="hidden">
         <div id="bgMusicPlayer"></div>
     </div>
 
     <!-- 音樂控制懸浮按鈕 -->
-    <button id="musicToggle" class="fixed bottom-6 right-6 z-[60] w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center border border-slate-200 text-emerald-600 hover:scale-110 transition-all">
-        <i id="musicIcon" class="fas fa-music"></i>
+    <button id="musicToggle" class="fixed bottom-6 right-6 z-[60] w-14 h-14 bg-white shadow-2xl rounded-full flex items-center justify-center border border-slate-100 text-emerald-600 hover:scale-110 transition-all group">
+        <div class="absolute -top-12 right-0 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            音樂播放控制
+        </div>
+        <i id="musicIcon" class="fas fa-music text-xl"></i>
     </button>
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <!-- Header -->
         <header class="mb-10 text-center md:text-left">
             <h1 class="text-3xl md:text-4xl font-bold text-slate-800 flex items-center justify-center md:justify-start gap-3">
-                <i class="fas fa-book-medical text-emerald-600"></i>
+                <i class="fas fa-heart-pulse text-rose-500 animate-pulse"></i>
                 銀髮族預防失能教案資料庫
             </h1>
-            <p class="mt-3 text-slate-600">專業運動教案總覽，守護長者健康活力</p>
+            <p class="mt-3 text-slate-600">匯整專業運動與認知訓練方案，打造活力高齡生活</p>
         </header>
 
         <!-- Search and Filters -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-8">
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="relative flex-grow">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                     <input 
                         type="text" 
                         id="searchInput"
-                        placeholder="搜尋教案標題、關鍵字..." 
-                        class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
+                        placeholder="搜尋教案名稱或課程關鍵字..." 
+                        class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                     >
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0" id="filterContainer">
-                    <button data-type="all" class="filter-btn active px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-emerald-600 text-white shadow-md transition-all">
-                        全部教案
+                    <button data-type="all" class="filter-btn active px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 transition-all">
+                        全部類別
                     </button>
-                    <button data-type="oral" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                    <button data-type="oral" class="filter-btn px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 transition-all">
                         口腔健康
                     </button>
-                    <button data-type="aerobic" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                    <button data-type="aerobic" class="filter-btn px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 transition-all">
                         體能鍛鍊
                     </button>
-                    <button data-type="cognitive" class="filter-btn px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                    <button data-type="cognitive" class="filter-btn px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 transition-all">
                         認知訓練
                     </button>
                 </div>
@@ -87,75 +90,75 @@
 
         <!-- Lessons Grid -->
         <div id="lessonsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Cards will be injected here by JS -->
+            <!-- 由 JavaScript 動態生成 -->
         </div>
 
         <!-- Empty State -->
         <div id="emptyState" class="hidden text-center py-24 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-            <i class="fas fa-search text-slate-200 text-6xl mb-4"></i>
-            <h3 class="text-xl font-bold text-slate-500">找不到相關教案</h3>
+            <i class="fas fa-clipboard-question text-slate-200 text-6xl mb-4"></i>
+            <h3 class="text-xl font-bold text-slate-500">找不到符合條件的教案</h3>
             <p class="text-slate-400 mt-2">請嘗試變更搜尋文字或分類篩選</p>
         </div>
     </div>
 
     <!-- Details Modal -->
-    <div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
+    <div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-5 border-b sticky top-0 bg-white z-10">
-                <h2 id="modalTitle" class="text-xl font-bold text-slate-800 truncate pr-4"></h2>
-                <button id="closeModal" class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
+            <div class="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
+                <h2 id="modalTitle" class="text-2xl font-bold text-slate-800 truncate pr-4"></h2>
+                <button id="closeModal" class="w-12 h-12 flex items-center justify-center hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-800 transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
 
             <!-- Modal Body -->
-            <div class="overflow-y-auto p-6 md:p-8">
-                <div class="flex flex-col lg:flex-row gap-10">
+            <div class="overflow-y-auto p-6 md:p-10">
+                <div class="flex flex-col lg:flex-row gap-12">
                     <!-- Left: Video & Stats -->
                     <div class="lg:w-3/5">
-                        <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-lg border border-slate-100">
+                        <div class="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-100">
                             <div id="videoContainer" class="w-full h-full"></div>
                         </div>
-                        <div class="mt-6 flex gap-4">
-                            <div class="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <span class="block text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">課程時間</span>
-                                <span id="modalDuration" class="text-xl font-bold text-slate-700"></span>
+                        <div class="mt-8 flex gap-6">
+                            <div class="flex-1 bg-slate-50 p-5 rounded-3xl border border-slate-100">
+                                <span class="block text-xs text-slate-400 uppercase font-black tracking-widest mb-1">預估時長</span>
+                                <span id="modalDuration" class="text-2xl font-bold text-slate-800"></span>
                             </div>
-                            <div class="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <span class="block text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">訓練難度</span>
-                                <span id="modalDifficulty" class="text-xl font-bold text-slate-700"></span>
+                            <div class="flex-1 bg-slate-50 p-5 rounded-3xl border border-slate-100">
+                                <span class="block text-xs text-slate-400 uppercase font-black tracking-widest mb-1">建議難度</span>
+                                <span id="modalDifficulty" class="text-2xl font-bold text-slate-800"></span>
                             </div>
                         </div>
-                        <a id="youtubeBtn" href="#" target="_blank" class="mt-6 flex items-center justify-center gap-2 w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg shadow-red-600/20 transition-all">
-                            <i class="fab fa-youtube text-xl"></i> 前往 YouTube 觀看
+                        <a id="youtubeBtn" href="#" target="_blank" class="mt-8 flex items-center justify-center gap-3 w-full py-5 bg-red-600 hover:bg-red-700 text-white text-lg font-bold rounded-2xl shadow-xl shadow-red-600/20 transition-all">
+                            <i class="fab fa-youtube text-2xl"></i> 開啟 YouTube 播放
                         </a>
                     </div>
 
                     <!-- Right: Info -->
-                    <div class="lg:w-2/5 space-y-8">
+                    <div class="lg:w-2/5 space-y-10">
                         <div>
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 教案簡介
+                            <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i class="fas fa-align-left text-emerald-500"></i> 教案核心簡介
                             </h4>
-                            <p id="modalDescription" class="text-slate-600 leading-relaxed bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100"></p>
+                            <p id="modalDescription" class="text-slate-600 text-lg leading-relaxed bg-emerald-50/30 p-6 rounded-3xl border border-emerald-100/50"></p>
                         </div>
 
                         <div>
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 核心動作重點
+                            <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i class="fas fa-list-check text-emerald-500"></i> 教學動作重點
                             </h4>
-                            <ul id="modalKeyPoints" class="space-y-3">
-                                <!-- Points injected here -->
+                            <ul id="modalKeyPoints" class="space-y-4">
+                                <!-- Points -->
                             </ul>
                         </div>
 
-                        <div class="p-5 bg-amber-50 rounded-2xl border border-amber-100">
-                            <h5 class="text-amber-800 font-bold text-sm mb-2 flex items-center gap-2">
-                                <i class="fas fa-lightbulb"></i> 專業指導建議
+                        <div class="p-6 bg-amber-50 rounded-3xl border border-amber-100">
+                            <h5 class="text-amber-800 font-bold text-sm mb-3 flex items-center gap-2">
+                                <i class="fas fa-user-doctor"></i> 教學貼心提示
                             </h5>
-                            <p class="text-amber-700 text-xs leading-relaxed">
-                                帶領運動前請確認場地平整且通風。動作應由慢至快，若長者出現呼吸急促或頭暈現象應立即停止。
+                            <p class="text-amber-700 text-sm leading-relaxed">
+                                運動前請確認環境安全。動作以不產生疼痛為原則。若長者感到頭暈或呼吸困難，請立即調整強度或暫停。
                             </p>
                         </div>
                     </div>
@@ -168,62 +171,60 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        // 背景音樂播放器邏輯
+        // --- 背景音樂控制系統 ---
         let bgPlayer;
         let isMusicPlaying = false;
+        let musicInitialEnabled = false;
 
         function onYouTubeIframeAPIReady() {
             bgPlayer = new YT.Player('bgMusicPlayer', {
                 height: '0',
                 width: '0',
-                videoId: 'fpinVj7lDDs', // 鋼琴曲影片 ID
+                videoId: '7RE1lp4PmW4', // 更新為最新提供的背景音樂 ID
                 playerVars: {
                     'autoplay': 1,
                     'loop': 1,
-                    'playlist': 'fpinVj7lDDs',
+                    'playlist': '7RE1lp4PmW4',
                     'controls': 0,
                     'showinfo': 0,
-                    'autohide': 1,
-                    'modestbranding': 1,
-                    'mute': 1 // 初始靜音以利自動播放
+                    'mute': 1 // 靜音以利自動播放
                 },
                 events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onReady': (event) => {
+                        event.target.playVideo();
+                        
+                        // 處理瀏覽器自動播放限制：首次點擊頁面取消靜音並播放
+                        const enableAudioOnFirstClick = () => {
+                            if (!musicInitialEnabled) {
+                                bgPlayer.unMute();
+                                bgPlayer.playVideo();
+                                isMusicPlaying = true;
+                                musicInitialEnabled = true;
+                                updateMusicUI();
+                                document.removeEventListener('click', enableAudioOnFirstClick);
+                            }
+                        };
+                        document.addEventListener('click', enableAudioOnFirstClick);
+                    },
+                    'onStateChange': (event) => {
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            isMusicPlaying = true;
+                        } else {
+                            isMusicPlaying = false;
+                        }
+                        updateMusicUI();
+                    }
                 }
             });
-        }
-
-        function onPlayerReady(event) {
-            // 嘗試播放
-            event.target.playVideo();
-            
-            // 監聽全局點擊來啟動聲音 (解決瀏覽器限制)
-            const enableAudio = () => {
-                bgPlayer.unMute();
-                bgPlayer.playVideo();
-                isMusicPlaying = true;
-                updateMusicUI();
-                document.removeEventListener('click', enableAudio);
-            };
-            document.addEventListener('click', enableAudio);
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                isMusicPlaying = true;
-                updateMusicUI();
-            } else {
-                isMusicPlaying = false;
-                updateMusicUI();
-            }
         }
 
         const musicToggle = document.getElementById('musicToggle');
         const musicIcon = document.getElementById('musicIcon');
 
         musicToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // 防止觸發 document 的點擊事件
+            e.stopPropagation(); 
+            if (!musicInitialEnabled) musicInitialEnabled = true;
+
             if (isMusicPlaying) {
                 bgPlayer.pauseVideo();
             } else {
@@ -235,14 +236,16 @@
         function updateMusicUI() {
             if (isMusicPlaying) {
                 musicIcon.className = "fas fa-compact-disc music-rotating";
-                musicToggle.classList.add('text-emerald-600');
+                musicToggle.classList.add('bg-emerald-600', 'text-white');
+                musicToggle.classList.remove('bg-white', 'text-emerald-600');
             } else {
                 musicIcon.className = "fas fa-music";
-                musicToggle.classList.remove('text-emerald-600');
+                musicToggle.classList.add('bg-white', 'text-emerald-600');
+                musicToggle.classList.remove('bg-emerald-600', 'text-white');
             }
         }
 
-        // 原有資料庫邏輯
+        // --- 教案資料庫邏輯 ---
         const LESSONS = [
             {
                 id: 1,
@@ -251,8 +254,8 @@
                 type: 'cognitive',
                 duration: '13:00',
                 video_id: 'kB0akZ1REKg',
-                description: '結合認知記憶與身體大肌肉活動，利用撲克牌遊戲激發長者大腦運作，同時強化肢體反應與專注力。',
-                keyPoints: ['紅黑花色動作連結', '短期視覺記憶挑戰', '上肢與下肢交替運動', '手眼協調反應訓練'],
+                description: '結合認知與身體大肌肉活動，利用撲克牌顏色與數字連結特定動作，激發腦部記憶力同時強化肢體反應。',
+                keyPoints: ['顏色/花色動作連結', '短期視覺記憶訓練', '上肢與下肢交替練習', '手眼反應力挑戰'],
                 difficulty: '中等'
             },
             {
@@ -262,8 +265,8 @@
                 type: 'oral',
                 duration: '06:24',
                 video_id: 'qZ87nEuBR4E',
-                description: '針對咀嚼與吞嚥能力設計，配合簡單的肢體動作，有效預防吸入性肺炎並提升進食安全。',
-                keyPoints: ['咀嚼肌群強化', '頸部與肩胛放鬆', '聲帶與吞嚥力練習', '坐姿全身協調'],
+                description: '針對咀嚼與吞嚥能力設計，配合頸部與肢體舒展，能有效提升進食安全並預防吸入性肺炎。',
+                keyPoints: ['強化咀嚼肌練習', '頸部肌肉伸展', '吞嚥動作引導', '搭配簡易手部動作'],
                 difficulty: '簡易'
             },
             {
@@ -273,8 +276,8 @@
                 type: 'oral',
                 duration: '04:25',
                 video_id: '_ggkL88fbJI',
-                description: '由專業語言治療師示範，專注於嘴唇、下巴與舌頭的細節運動，適合有吞嚥困擾或預防功能的長者。',
-                keyPoints: ['嘴唇閉合與力量訓練', '舌頭四向靈活度練習', '下巴抗阻耐力運動', '口腔周邊肌肉按摩'],
+                description: '專業語言治療師示範，專注於嘴唇、下巴與舌頭的精細動作，維持口腔功能的靈活性。',
+                keyPoints: ['嘴唇閉合肌力訓練', '下巴抗阻練習', '舌頭靈活度練習', '口腔按摩舒緩'],
                 difficulty: '簡易'
             },
             {
@@ -284,8 +287,8 @@
                 type: 'aerobic',
                 duration: '08:20',
                 video_id: 'LFZp7wC01Dg',
-                description: '低衝擊、無跳躍設計，專為高齡者或初學者設計的體力補給，強化核心與心肺耐力。',
-                keyPoints: ['低衝擊原地踏步', '大肌肉群循環訓練', '核心肌群穩定練習', '漸進式心肺負荷提升'],
+                description: '無跳躍、低衝擊設計，適合各年齡層長者的基礎體力訓練，能溫和地提升心肺功能。',
+                keyPoints: ['無跳躍安全動作', '大肌肉群循環運動', '站立平衡感練習', '呼吸節奏調整'],
                 difficulty: '中等'
             },
             {
@@ -295,8 +298,8 @@
                 type: 'aerobic',
                 duration: '28:04',
                 video_id: '7pIeSsndwbA',
-                description: '臺北市衛生局推廣長版教案，包含完整的暖身、主運動與緩和，是團體課程的最佳教材。',
-                keyPoints: ['全身性關節活動', '中強度有氧代謝', '平穩肢體伸展', '呼吸節奏控制訓練'],
+                description: '最完整的長版健康操，包含熱身、核心運動與緩和，適合社區團體課程使用。',
+                keyPoints: ['全身性關節活動度', '中強度有氧代謝', '肢體穩定性練習', '放鬆肌肉伸展'],
                 difficulty: '進階'
             }
         ];
@@ -327,32 +330,32 @@
                 grid.classList.remove('hidden');
                 emptyState.classList.add('hidden');
                 grid.innerHTML = filtered.map(lesson => `
-                    <div class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer overflow-hidden" onclick="openLesson(${lesson.id})">
+                    <div class="group bg-white rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer overflow-hidden" onclick="openLesson(${lesson.id})">
                         <div class="aspect-video bg-slate-200 relative">
                             <img src="https://img.youtube.com/vi/${lesson.video_id}/mqdefault.jpg" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                <div class="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-xl">
-                                    <i class="fas fa-play text-white ml-1"></i>
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/50 shadow-2xl">
+                                    <i class="fas fa-play text-white text-xl ml-1"></i>
                                 </div>
                             </div>
-                            <div class="absolute bottom-3 right-3 bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded">
+                            <div class="absolute bottom-4 right-4 bg-black/80 text-white text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-md">
                                 ${lesson.duration}
                             </div>
                         </div>
-                        <div class="p-6">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="w-2 h-2 rounded-full ${getCategoryColor(lesson.type)}"></span>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${lesson.category}</span>
+                        <div class="p-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-3 h-3 rounded-full ${getCategoryColor(lesson.type)}"></span>
+                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">${lesson.category}</span>
                             </div>
-                            <h3 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-emerald-600 transition-colors">
+                            <h3 class="text-xl font-bold text-slate-800 leading-snug group-hover:text-emerald-600 transition-colors">
                                 ${lesson.title}
                             </h3>
-                            <p class="mt-3 text-slate-500 text-sm line-clamp-2 leading-relaxed">
+                            <p class="mt-4 text-slate-500 text-sm line-clamp-2 leading-relaxed">
                                 ${lesson.description}
                             </p>
-                            <div class="mt-5 flex items-center justify-between text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">
-                                <span><i class="far fa-clock mr-1"></i> ${lesson.duration}</span>
-                                <span class="bg-slate-50 px-2 py-1 rounded">${lesson.difficulty}</span>
+                            <div class="mt-6 flex items-center justify-between text-xs font-bold text-slate-400 pt-5 border-t border-slate-50">
+                                <span><i class="far fa-clock mr-2"></i> ${lesson.duration}</span>
+                                <span class="bg-slate-50 px-3 py-1 rounded-full text-slate-500">難度: ${lesson.difficulty}</span>
                             </div>
                         </div>
                     </div>
@@ -362,9 +365,9 @@
 
         function getCategoryColor(type) {
             switch(type) {
-                case 'oral': return 'bg-blue-500';
-                case 'aerobic': return 'bg-red-500';
-                case 'cognitive': return 'bg-purple-500';
+                case 'oral': return 'bg-sky-500';
+                case 'aerobic': return 'bg-rose-500';
+                case 'cognitive': return 'bg-violet-500';
                 default: return 'bg-slate-500';
             }
         }
@@ -373,7 +376,7 @@
             const lesson = LESSONS.find(l => l.id === id);
             if (!lesson) return;
 
-            // 打開彈窗時暫停背景音樂
+            // 啟動教案影片時，暫停背景音樂
             if (isMusicPlaying) bgPlayer.pauseVideo();
 
             document.getElementById('modalTitle').innerText = lesson.title;
@@ -388,11 +391,11 @@
             `;
 
             document.getElementById('modalKeyPoints').innerHTML = lesson.keyPoints.map((p, i) => `
-                <li class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="flex-shrink-0 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] font-black">
+                <li class="flex items-start gap-4 bg-slate-50 p-5 rounded-3xl border border-slate-100">
+                    <span class="flex-shrink-0 w-8 h-8 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-xs font-black">
                         ${i + 1}
                     </span>
-                    <span class="text-slate-700 font-medium text-sm">${p}</span>
+                    <span class="text-slate-700 font-bold text-base">${p}</span>
                 </li>
             `).join('');
 
@@ -401,7 +404,7 @@
             
             setTimeout(() => {
                 modalContent.classList.remove('scale-95', 'opacity-0');
-            }, 10);
+            }, 50);
         }
 
         function closeDetails() {
@@ -411,8 +414,10 @@
                 document.body.classList.remove('modal-active');
                 document.getElementById('videoContainer').innerHTML = ''; 
                 
-                // 關閉詳情後，若原本有音樂則恢復背景音樂
-                if (!isMusicPlaying) bgPlayer.playVideo();
+                // 關閉詳情視窗後，若背景音樂原本是播放狀態，則恢復播放
+                if (musicInitialEnabled && !isMusicPlaying) {
+                    bgPlayer.playVideo();
+                }
             }, 300);
         }
 
@@ -424,11 +429,11 @@
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => {
-                    b.classList.remove('active', 'bg-emerald-600', 'text-white', 'shadow-md');
-                    b.classList.add('bg-slate-100', 'text-slate-600');
+                    b.classList.remove('active', 'bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-600/20');
+                    b.classList.add('bg-white', 'text-slate-600', 'border-slate-100');
                 });
-                btn.classList.add('active', 'bg-emerald-600', 'text-white', 'shadow-md');
-                btn.classList.remove('bg-slate-100', 'text-slate-600');
+                btn.classList.add('active', 'bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-600/20');
+                btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-100');
                 currentFilter = btn.dataset.type;
                 renderLessons();
             });
